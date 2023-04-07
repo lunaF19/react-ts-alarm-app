@@ -1,13 +1,22 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useForm, Controller } from "react-hook-form"
-import { useDispatch } from "react-redux"
-import { alarmType, setAlarmData, addAlarmData} from '../../store/features/alarmsSlice';
+import { useDispatch, useSelector } from "react-redux"
+import { alarmType, setAlarmData, addAlarmData } from '../../store/features/alarmsSlice';
+
+import { RootState } from "../../store/index"
+
 
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import FormControl from '@mui/material/FormControl';
 import Button from '@mui/material/Button';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import CircularProgress from '@mui/material/CircularProgress';
 
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import ErrorIcon from '@mui/icons-material/Error';
+
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -27,6 +36,7 @@ interface AlarmFormProps {
 
 export const AlarmForm = (props: AlarmFormProps) => {
     const dispatch = useDispatch()
+    const { status } = useSelector((store: RootState) => store.alarms)
 
     const { alarm, openModalDialog, setOpenModalDialog } = props
 
@@ -80,7 +90,7 @@ export const AlarmForm = (props: AlarmFormProps) => {
             setIsInsert(!Boolean(alarm.id))
             setSelectedDays(alarm.days)
             setSelectedTime(new Date(alarm.hour))
-            if ( alarm.note ) setNoteText(alarm.note)
+            if (alarm.note) setNoteText(alarm.note)
             else setNoteText("")
         }
     }, [openModalDialog])
@@ -115,13 +125,22 @@ export const AlarmForm = (props: AlarmFormProps) => {
                                 onChange={(e) => { setNoteText(e.target.value) }}
                             />
                         </FormControl>
-                        <Button ref={refBtnSubmit} fullWidth type="submit"> {isInsert ? "Inser " : "Save"}</Button>
+                        <Button ref={refBtnSubmit} fullWidth type="submit" style={{ display: "none" }}>
+                            {isInsert ? "Inser " : "Save"}
+                        </Button>
 
                     </Box>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose}>Cancel</Button>
-                    <Button onClick={() => refBtnSubmit.current.click()}>Ok</Button>
+                    <Button onClick={handleClose} disabled={status === 2} >
+                        Cancel
+                    </Button>
+                    <Button onClick={() => refBtnSubmit.current.click()} disabled={status === 2}>
+                        Ok
+                        {status === 2 && <CircularProgress/>}
+                        {status === 3 && <CheckCircleIcon />}
+                        {status === -1 && <ErrorOutlineIcon />}
+                    </Button>
                 </DialogActions>
             </Dialog>
 

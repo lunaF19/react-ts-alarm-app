@@ -8,7 +8,7 @@ import { firestoreFB } from '../../api/firebase/config';
 export const initDataAlarm: alarmType = {
     uid: "",
     id: "",
-    hour: new Date(),
+    hour: new Date().toString(),
     days: [],
     note: null,
 }
@@ -16,14 +16,15 @@ export const initDataAlarm: alarmType = {
 export interface alarmType {
     uid: string;
     id: string;
-    hour: Date;
+    hour: string;
     days: number[]
     note: string | null
 }
 
 export interface stateAlarm {
-    lastUpdate: Date | null;
-    data: Array<alarmType>
+    lastUpdate: string | null;
+    data: Array<alarmType>;
+    status: number // -1 error, 0 = none, 1 = doing Get, 2 = going, Delete, Update, Add item alarm, 3 = Success in task
 }
 
 interface ReducerPayloadType {
@@ -40,7 +41,8 @@ const itemLsStateAlarms = "alarms-state"
 
 const initialState: stateAlarm = {
     lastUpdate: null,
-    data: []
+    data: [],
+    status: 0
 };
 
 
@@ -53,19 +55,58 @@ export const alarmSlice = createSlice({
     name: 'alarm',
     initialState: init(),
     reducers: {
+        taskGetDataAlarms: (state: stateAlarm): stateAlarm => {
+            return {
+                ...state,
+                status: 1,
+            }
+        },
+        taskAddAlarm: (state: stateAlarm): stateAlarm => {
+            return {
+                ...state,
+                status: 2,
+            }
+        },
+        taskUpdateAlarm: (state: stateAlarm): stateAlarm => {
+            return {
+                ...state,
+                status: 2,
+            }
+        },
+        taskDeleteAlarm: (state: stateAlarm): stateAlarm => {
+            return {
+                ...state,
+                status: 2,
+            }
+        },
+        errorTask: (state: stateAlarm): stateAlarm => {
+            return {
+                ...state,
+                status: -1,
+            }
+        },
+        successTask: (state: stateAlarm): stateAlarm => {
+            return {
+                ...state,
+                status: 3,
+            }
+        },
         newDataAlarms: (state: stateAlarm, action: actionReducerType): stateAlarm => {
             const { data } = action.payload
             if (!data) return state
             return {
-                lastUpdate: new Date(),
+                status: 0,
+                lastUpdate: new Date().toString(),
                 data: [...data]
+
             }
         },
         newAlarm: (state: stateAlarm, action: actionReducerType): stateAlarm => {
             const { alarm } = action.payload
             if (!alarm) return state
             return {
-                lastUpdate: new Date(),
+                status: 0,
+                lastUpdate: new Date().toString(),
                 data: [...state.data, { ...alarm }]
             }
         },
@@ -78,7 +119,8 @@ export const alarmSlice = createSlice({
             })
 
             return {
-                lastUpdate: new Date(),
+                status: 0,
+                lastUpdate: new Date().toString(),
                 data: newDataAlarm
             }
         },
@@ -88,7 +130,8 @@ export const alarmSlice = createSlice({
             const newDataAlarm = state.data.filter((itemAlarm) => (itemAlarm.id !== alarm.id))
 
             return {
-                lastUpdate: new Date(),
+                status: 0,
+                lastUpdate: new Date().toString(),
                 data: newDataAlarm
             }
         },
@@ -96,11 +139,26 @@ export const alarmSlice = createSlice({
     }
 });
 
-export const { newDataAlarms, newAlarm, updateAlarm, deleteAlarm } = alarmSlice.actions;
+export const {
+    newDataAlarms,
+    newAlarm,
+    updateAlarm,
+    deleteAlarm,
+
+    taskGetDataAlarms,
+    taskAddAlarm,
+    taskUpdateAlarm,
+    taskDeleteAlarm,
+    errorTask,
+    successTask,
+
+} = alarmSlice.actions;
+
 export default alarmSlice.reducer;
 
 export const getAlarmsData = () => (dispatch: any) => {
     try {
+        dispatch(taskGetDataAlarms())
         const data: Array<alarmType> = []
         const collectionRef = collection(firestoreFB, "alarm");
         const queryRef = query(collectionRef, where("uid", "==", "DosVijIsWdWO2Kn4aJAJj9Zil5k2"));
@@ -113,7 +171,9 @@ export const getAlarmsData = () => (dispatch: any) => {
                 const itemAlarm: alarmType = { id, uid, days, hour: hour.toDate().toLocaleDateString('en-US', { hour: 'numeric', minute: 'numeric' }), note }
                 data.push(itemAlarm)
             });
+            dispatch(successTask())
             dispatch(newDataAlarms({ data }))
+
         }).catch(err => {
             console.error(err)
         });
@@ -123,9 +183,9 @@ export const getAlarmsData = () => (dispatch: any) => {
 };
 
 
-export const setAlarmData = (alarmItem: alarmType) => (dispatch: any) => {
+export const setAlarmData = (alarmItem: any) => (dispatch: any) => {
     try {
-        console.log("setAlarmData ", { alarmItem })
+        dispatch(taskUpdateAlarm())
         const collectionRef = collection(firestoreFB, "alarm");
         const docAlarm = doc(collectionRef, alarmItem.id)
         setDoc((docAlarm), {
@@ -134,10 +194,12 @@ export const setAlarmData = (alarmItem: alarmType) => (dispatch: any) => {
             hour: alarmItem.hour,
             note: alarmItem.note,
         }).then(docRef => {
+            dispatch(successTask())
             dispatch(updateAlarm({
                 alarm: {
                     ...alarmItem,
-                    hour: new Date(alarmItem.hour.toLocaleDateString('en-US', { hour: 'numeric', minute: 'numeric' }))
+                    hour: alarmItem.hour.toLocaleDateString('en-US', { hour: 'numeric', minute: 'numeric' })
+                    // hour: new Date(alarmItem.hour.toLocaleDateString('en-US', { hour: 'numeric', minute: 'numeric' }))
                 }
             }))
         });
@@ -145,11 +207,10 @@ export const setAlarmData = (alarmItem: alarmType) => (dispatch: any) => {
         console.error(err)
     }
 };
-// addDoc
 
-
-export const addAlarmData = (alarmItem: alarmType) => (dispatch: any) => {
+export const addAlarmData = (alarmItem: any) => (dispatch: any) => {
     try {
+        dispatch(taskAddAlarm())
         const collectionRef = collection(firestoreFB, "alarm");
         addDoc((collectionRef), {
             uid: alarmItem.uid,
@@ -157,11 +218,13 @@ export const addAlarmData = (alarmItem: alarmType) => (dispatch: any) => {
             days: alarmItem.days,
             note: alarmItem.note,
         }).then(docRef => {
+            dispatch(successTask())
             dispatch(newAlarm({
                 alarm: {
                     ...alarmItem,
                     id: docRef.id,
-                    hour: new Date(alarmItem.hour.toLocaleDateString('en-US', { hour: 'numeric', minute: 'numeric' }))
+                    hour: alarmItem.hour.toLocaleDateString('en-US', { hour: 'numeric', minute: 'numeric' })
+                    // hour: new Date(alarmItem.hour.toLocaleDateString('en-US', { hour: 'numeric', minute: 'numeric' }))
                 }
             }))
         });
@@ -171,13 +234,13 @@ export const addAlarmData = (alarmItem: alarmType) => (dispatch: any) => {
 };
 
 
-export const deleteAlarmData = (alarmItem: alarmType) => (dispatch: any) => {
+export const deleteAlarmData = (alarmItem: any) => (dispatch: any) => {
     try {
-        alert(JSON.stringify({ alarmItem }))
-
+        dispatch(taskDeleteAlarm())
         const collectionRef = collection(firestoreFB, "alarm");
         const docAlarm = doc(collectionRef, alarmItem.id)
         deleteDoc(docAlarm).then(docRef => {
+            dispatch(successTask())
             dispatch(deleteAlarm({
                 alarm: {
                     ...alarmItem

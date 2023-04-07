@@ -17,18 +17,18 @@ import CardMedia from '@mui/material/CardMedia';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { Button, CardActionArea, CardActions } from '@mui/material';
+import CircularProgress from '@mui/material/CircularProgress';
+import LinearProgress from '@mui/material/LinearProgress';
 
 import { Container } from "@mui/material"
 
 
-import schedule from 'node-schedule';
-
 export const PageAlarms = () => {
   const dispatch = useDispatch()
-  const [alarmItem, setAlarmItem] = useState<alarmType>({} as alarmType)
   const authStore = useSelector((store: RootState) => store.auth)
   const alarmsStore = useSelector((store: RootState) => store.alarms)
 
+  const [alarmItem, setAlarmItem] = useState<alarmType>({} as alarmType)
   const refTimerDiv = useRef<HTMLElement>(null)
   const [openModalDialog, setOpenModalDialog] = useState<boolean>(false)
 
@@ -66,27 +66,10 @@ export const PageAlarms = () => {
     }
   }, [])
 
-
-  // useEffect(() => {
-  //   const alarm = schedule.scheduleJob('* * * * *', () => {
-  //     console.log(new Date())
-  //   });
-
-  //   // Clean up the alarm when the component unmounts
-  //   return () => {
-  //     alarm.cancel();
-  //   };
-  // }, []);
-
-
-
-
-
-
   return (
     <Box sx={{ flexGrow: 1, justifyContent: "center" }
     }>
-      <Container maxWidth="sm">
+      <Container maxWidth="sm"> 
 
         <Card style={{ margin: "10px 0" }}>
           <CardActionArea>
@@ -107,6 +90,18 @@ export const PageAlarms = () => {
         </Card>
 
 
+        {
+          alarmsStore.status === 1 && (
+            <Box sx={{ display: 'flex' }}>
+              <Container>
+                {/* <CircularProgress /> */}
+                {/* Getting alarms... */}
+                <LinearProgress />
+              </Container>
+            </Box>
+          )
+        }
+
 
 
         <AlarmForm
@@ -118,7 +113,7 @@ export const PageAlarms = () => {
         {
           alarmsStore.data.map((alarmItem: alarmType) => {
             return (
-              <ItemAlarmCard alarm={alarmItem} onClicEdit={handleClickEdit} onClickDelete={handleClickDelete} />
+              <ItemAlarmCard key={alarmItem.id} alarm={alarmItem} onClicEdit={handleClickEdit} onClickDelete={handleClickDelete} />
             )
           })
         }
