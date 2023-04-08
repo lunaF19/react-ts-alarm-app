@@ -3,7 +3,8 @@ import { useMemo } from "react"
 
 import { alarmType } from "../../store/features/alarmsSlice"
 
-import { daysList } from "../components/MultiSelectDays"
+import { daysList, MultiSelectDays } from "../components/MultiSelectDays"
+
 
 /* Card alarm */
 import Card from '@mui/material/Card';
@@ -27,40 +28,36 @@ export const ItemAlarmCard = (props: ItemAlarmCardProps) => {
 
 
     const showDays = useMemo(() => {
-        const daysFiltered = daysList.filter(item => days.includes(item.value))
-        const text = new Intl.ListFormat("en", { type: "conjunction" }).format(daysFiltered.map(item => item.label))
         return (
-            <>
-                The alarms will sound {text}.
-            </>
+            <MultiSelectDays selectedDays={alarm.days} isSmall={true} />
         )
     }, [daysList, days])
 
     return (
 
         <Card style={{ margin: "10px 0" }} className="animate__animated animate__fadeInDown">
-            <CardActionArea>
+            <CardActionArea onClick={() => onClicEdit(alarm)}>
 
-                <CardContent>
-                    <Typography gutterBottom variant="h3" component="div">
+                <CardContent sx={{ display: 'flex', flexWrap: 'wrap', alignItems: "center"}}>
+                    <Typography gutterBottom variant="h3" component="div" style={{ display: "flex", alignItems: "center", width: "45%" }}>
                         {hour.toString().split(",")[1]}
-
-                        <div style={{ position: "absolute", top: "0", right: "0" }}>
-                            <Switch checked={active}  color="primary" size="medium" onClick={() => onClickActiveToggle(alarm)} />
-                        </div>
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
+
+                    <Typography gutterBottom variant="h3" component="div" style={{ display: "flex", alignItems: "center", width: "55%", justifyContent: "center" }}>
                         {showDays}
                     </Typography>
                 </CardContent>
             </CardActionArea>
-            <CardActions>
+            <CardActions style={{ position: "relative", }}>
                 <Button size="small" color="primary" onClick={() => onClicEdit(alarm)}>
                     Edit
                 </Button>
                 <Button size="small" color="error" onClick={() => onClickDelete(alarm)}>
                     Delete
                 </Button>
+                <div style={{ position: "absolute", bottom: "0", right: "0", height: "100%", display: "flex", alignItems: "center", }}>
+                    <Switch checked={active} color="primary" size="medium" onClick={() => onClickActiveToggle(alarm)} />
+                </div>
             </CardActions>
         </Card>
     )

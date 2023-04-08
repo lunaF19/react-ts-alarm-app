@@ -1,23 +1,5 @@
-import { Theme, useTheme } from '@mui/material/styles';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import MenuItem from '@mui/material/MenuItem';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
-
-import { InputLabel } from '@mui/material';
-
-
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-const MenuProps = {
-    PaperProps: {
-        style: {
-            maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-            width: 250,
-        },
-    },
-};
-
-
+import { Theme } from '@mui/material/styles';
+import { Stack, Chip } from '@mui/material';
 
 export const daysList = [
     { label: 'Sunday', value: 0 },
@@ -29,52 +11,79 @@ export const daysList = [
     { label: 'Saturday', value: 6 },
 ];
 
-function getStyles(value: number, days: number[], theme: Theme) {
-    return {
-        fontWeight: days.includes(value) ? theme.typography.fontWeightRegular : theme.typography.fontWeightMedium,
-    };
-}
+
+export const daysList2 = [
+    { label: 'D', value: 0 },
+    { label: 'L', value: 1 },
+    { label: 'M', value: 2 },
+    { label: 'X', value: 3 },
+    { label: 'J', value: 4 },
+    { label: 'V', value: 5 },
+    { label: 'S', value: 6 },
+];
 
 interface MultiSelectDaysProps {
     selectedDays: number[]
-    setSelectedDays: React.Dispatch<React.SetStateAction<number[]>>
+    setSelectedDays?: React.Dispatch<React.SetStateAction<number[]>>
+    isSmall?: boolean;
 }
 
 
 export const MultiSelectDays = (props: MultiSelectDaysProps) => {
-    const theme = useTheme();
-    const { selectedDays, setSelectedDays } = props
+    const { selectedDays, setSelectedDays, isSmall } = props
 
-    const handleChange = (event: SelectChangeEvent<typeof selectedDays>) => {
-        const {
-            target: { value },
-        } = event;
-        setSelectedDays(value as typeof selectedDays);
-    };
+    const onClickBtnDay = (day: number) => {
+        if (setSelectedDays) {
+            if (selectedDays.includes(day)) {
+                setSelectedDays(prev => prev.filter(item => item !== day))
+            } else {
+                setSelectedDays(prev => [...prev, day])
+            }
+        }
+    }
 
     return (
         <>
-            <InputLabel id="days-multiple-name-label">Select Days</InputLabel>
-            <Select
-                labelId="days-multiple-name-label"
-                id="days-multiple-name"
-                multiple
-                value={selectedDays}
-                onChange={handleChange}
-                input={<OutlinedInput label="Name" />}
-                MenuProps={MenuProps}
-            >
-                {daysList.map((itemDay) => (
-                    <MenuItem
-                        key={`${itemDay.value}__${itemDay.label}`}
-                        value={itemDay.value}
-                        style={getStyles(itemDay.value, selectedDays, theme)}
-                    >
-                        {itemDay.label}
-                    </MenuItem>
-                ))}
-            </Select>
+            <Stack direction="row" spacing={1} justifyContent={"center"} >
+                {
+                    daysList2.map(({ value, label }) => {
+                        return (
+                            <ButtonDay
+                                isSmall={isSmall}
+                                label={label}
+                                day={value}
+                                isSelected={selectedDays.includes(value)}
+                                onClick={onClickBtnDay}
+                            />
+                        )
+                    })
+                }
+            </Stack >
         </>
 
     );
+}
+
+
+interface ButtonDayProps {
+    isSelected: boolean,
+    label: string
+    day: number,
+    isSmall?: boolean
+    onClick: (prm: number) => void
+}
+
+
+const ButtonDay = (props: ButtonDayProps) => {
+    const { isSelected, onClick, day, label, isSmall } = props
+
+    return (
+        <Chip
+            size={isSmall ? "small" : "medium"}
+            color="primary"
+            label={label}
+            onClick={() => onClick(day)}
+            variant={isSelected ? "filled" : "outlined"}
+        />
+    )
 }

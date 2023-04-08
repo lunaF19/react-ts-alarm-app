@@ -108,14 +108,14 @@ export const AlarmForm = (props: AlarmFormProps) => {
             <Dialog disableEscapeKeyDown open={openModalDialog} onClose={handleClose}>
                 <DialogTitle>Create new alarm</DialogTitle>
                 <DialogContent>
-                    <Box component="form" sx={{ display: 'flex', flexWrap: 'wrap' }}>
+                    <Box component="form" sx={{ display: 'flex', flexWrap: 'wrap', alignItems: "center" }}>
 
-                        <FormControl sx={{ m: 1, width: "100%" }}>
+                        <FormControl sx={{ m: 1, width: "30%" }}>
                             <TimePickerHour
                                 selectedTime={selectedTime}
                                 setSelectedTime={setSelectedTime} />
                         </FormControl>
-                        <FormControl sx={{ m: 1, width: "100%" }}>
+                        <FormControl sx={{ m: 1, width: "60%", }}>
                             <MultiSelectDays
                                 selectedDays={selectedDays}
                                 setSelectedDays={setSelectedDays} />

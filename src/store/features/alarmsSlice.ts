@@ -232,7 +232,7 @@ export const setAlarmData = (alarmItem: any) => (dispatch: any) => {
             dispatch(successTask())
             setTimeout(() => {
                 dispatch(initialStatusTask())
-            }, 1000)
+            }, 2000)
         });
     } catch (err) {
         console.error(err)
@@ -260,7 +260,7 @@ export const addAlarmData = (alarmItem: any) => (dispatch: any) => {
             dispatch(successTask())
             setTimeout(() => {
                 dispatch(initialStatusTask())
-            }, 1000)
+            }, 2000)
         });
     } catch (err) {
         console.error(err)
@@ -282,7 +282,7 @@ export const deleteAlarmData = (alarmItem: alarmType) => (dispatch: any) => {
             dispatch(successTask())
             setTimeout(() => {
                 dispatch(initialStatusTask())
-            }, 1000)
+            }, 2000)
         });
     } catch (err) {
         console.error(err)
@@ -312,7 +312,7 @@ export const setActiveAlarm = (alarmItem: any) => (dispatch: any): void => {
             dispatch(successTask())
             setTimeout(() => {
                 dispatch(initialStatusTask())
-            }, 1000)
+            }, 2000)
         });
     } catch (err) {
         console.error(err)
