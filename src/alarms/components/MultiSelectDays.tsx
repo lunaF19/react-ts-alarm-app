@@ -1,6 +1,3 @@
-
-
-
 import { Theme, useTheme } from '@mui/material/styles';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import MenuItem from '@mui/material/MenuItem';
@@ -23,7 +20,7 @@ const MenuProps = {
 
 
 export const daysList = [
-    { label: 'Sunday', value: 7 },
+    { label: 'Sunday', value: 0 },
     { label: 'Monday', value: 1 },
     { label: 'Thuesday', value: 2 },
     { label: 'Wednesday', value: 3 },

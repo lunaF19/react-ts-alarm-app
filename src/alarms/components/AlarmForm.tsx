@@ -65,11 +65,11 @@ export const AlarmForm = (props: AlarmFormProps) => {
         const itemAlarm: alarmType = {
             id: alarm.id,
             uid: alarm.uid,
-            hour: selectedTime,
+            hour: selectedTime.toString(),
             days: selectedDays,
-            note: noteText
+            note: noteText,
+            active: Boolean(alarm.active)
         }
-
         if (isInsert) {
             dispatch(addAlarmData(itemAlarm))
             setIsInsert(false)
@@ -94,6 +94,13 @@ export const AlarmForm = (props: AlarmFormProps) => {
             else setNoteText("")
         }
     }, [openModalDialog])
+
+    useEffect(() => {
+        if (status === 3) {
+            setOpenModalDialog(false)
+        }
+    }, [status])
+
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -137,7 +144,7 @@ export const AlarmForm = (props: AlarmFormProps) => {
                     </Button>
                     <Button onClick={() => refBtnSubmit.current.click()} disabled={status === 2}>
                         Ok
-                        {status === 2 && <CircularProgress/>}
+                        {status === 2 && <CircularProgress />}
                         {status === 3 && <CheckCircleIcon />}
                         {status === -1 && <ErrorOutlineIcon />}
                     </Button>
