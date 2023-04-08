@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { useSelector } from "react-redux"
 
 import { useNavigate } from "react-router-dom"
 import AppBar from '@mui/material/AppBar';
@@ -13,11 +12,13 @@ import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 
 import { RootState } from "../store/index"
+import {  useAppSelector } from "../store/hooks"
+
 
 export default function MenuAppBar() {
     const navigate = useNavigate();
 
-    const { logged } = useSelector((store: RootState) => store.auth);
+    const { logged } = useAppSelector((store: RootState) => store.auth);
 
     const [auth, setAuth] = useState(true);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useForm, Controller } from "react-hook-form"
-import { useDispatch, useSelector } from "react-redux"
+import { useAppDispatch, useAppSelector } from "../../store/hooks"
 import { alarmType, setAlarmData, addAlarmData } from '../../store/features/alarmsSlice';
 
 import { RootState } from "../../store/index"
@@ -35,15 +35,15 @@ interface AlarmFormProps {
 }
 
 export const AlarmForm = (props: AlarmFormProps) => {
-    const dispatch = useDispatch()
-    const { status } = useSelector((store: RootState) => store.alarms)
+    const dispatch = useAppDispatch()
+    const { status } = useAppSelector((store: RootState) => store.alarms)
 
     const { alarm, openModalDialog, setOpenModalDialog } = props
 
     const [isInsert, setIsInsert] = useState<boolean>(false)
 
     const [selectedDays, setSelectedDays] = React.useState<number[]>(alarm.days || []);
-    const refBtnSubmit = useRef(null)
+    const refBtnSubmit = useRef<HTMLButtonElement>(null)
 
     const [selectedTime, setSelectedTime] = useState<Date | null>(new Date(alarm.hour));
 
@@ -142,7 +142,14 @@ export const AlarmForm = (props: AlarmFormProps) => {
                     <Button onClick={handleClose} disabled={status === 2} >
                         Cancel
                     </Button>
-                    <Button onClick={() => refBtnSubmit.current.click()} disabled={status === 2}>
+                    <Button
+                        disabled={status === 2}
+                        onClick={() => {
+                            if (refBtnSubmit.current) {
+                                refBtnSubmit.current.click()
+                            }
+                        }}
+                    >
                         Ok
                         {status === 2 && <CircularProgress />}
                         {status === 3 && <CheckCircleIcon />}

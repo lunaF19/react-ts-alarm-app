@@ -1,6 +1,6 @@
 
 import { useEffect } from "react"
-import { useSelector } from "react-redux/es/exports"
+import { useAppSelector } from "../../store/hooks"
 import { RootState } from "../../store/index"
 
 import Button from '@mui/material/Button';
@@ -26,7 +26,7 @@ interface DeleteAlarmConfirmationProps {
 export const DeleteAlarmConfirmation = (props: DeleteAlarmConfirmationProps) => {
     const { openDeleteConfirmation, setOpenDeleteConfirmation, handleDeleteAlarm } = props
 
-    const { status } = useSelector((store: RootState) => store.alarms)
+    const { status } = useAppSelector((store: RootState) => store.alarms)
 
 
     const handleClose = () => {
@@ -50,27 +50,27 @@ export const DeleteAlarmConfirmation = (props: DeleteAlarmConfirmationProps) => 
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
                 className="animate__animated animate__fadeIn animate__faster"
-                
+
             >
                 <div >
 
-                <DialogTitle id="alert-dialog-title">
-                    You can delete this alarm?
-                </DialogTitle>
-                <DialogContent>
-                    <DialogContentText id="alert-dialog-description">
-                        Remember what you in any time have a possibility disabled this alarm
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleClose}>Cancel</Button>
-                    <Button onClick={handleDeleteAlarm} autoFocus color="error">
-                        Delete
-                        {status === 2 && <CircularProgress />}
-                        {status === 3 && <CheckCircleIcon />}
-                        {status === -1 && <ErrorOutlineIcon />}
-                    </Button>
-                </DialogActions>
+                    <DialogTitle id="alert-dialog-title">
+                        You can delete this alarm?
+                    </DialogTitle>
+                    <DialogContent>
+                        <DialogContentText id="alert-dialog-description">
+                            Remember what you in any time have a possibility disabled this alarm
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleClose}>Cancel</Button>
+                        <Button onClick={handleDeleteAlarm} autoFocus color="error">
+                            Delete
+                            {status === 2 && <CircularProgress />}
+                            {status === 3 && <CheckCircleIcon />}
+                            {status === -1 && <ErrorOutlineIcon />}
+                        </Button>
+                    </DialogActions>
                 </div>
             </Dialog>
         </div>

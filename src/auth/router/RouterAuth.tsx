@@ -1,13 +1,13 @@
-import { useSelector } from "react-redux";
+import { useAppSelector } from "../../store/hooks"
+
 import { RootState } from "../../store";
 import { Route, Routes, Navigate } from "react-router-dom";
-
 
 //Componentes
 import { PageAuthLogin, PageAuthRegister, PageLogout } from '../pages'
 
 export const RouterAuth = () => {
-  const { logged } = useSelector((store: RootState) => store.auth)
+  const { logged } = useAppSelector((store: RootState) => store.auth)
 
   return (
     <>

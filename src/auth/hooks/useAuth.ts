@@ -12,7 +12,8 @@ import {
 
 import { URL_API } from "../../config";
 
-import { useDispatch } from "react-redux/es/hooks/useDispatch";
+import { useAppDispatch } from "../../store/hooks"
+
 import { authFB, errorsFB } from "../../api/firebase/"
 
 interface resAuthType {
@@ -22,7 +23,7 @@ interface resAuthType {
 
 export const useAuth = () => {
 
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
     const [resAuth, setResAuth] = useState<resAuthType>({ error: "", message: "" })

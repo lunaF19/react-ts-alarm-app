@@ -2,8 +2,7 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from "react"
 
 import { RootState } from "../../store/index"
-import { useSelector, useDispatch } from "react-redux/es/exports"
-
+import { useAppDispatch, useAppSelector } from "../../store/hooks"
 import { getAlarmsData, alarmType, initDataAlarm, deleteAlarmData, setActiveAlarm } from "../../store/features/alarmsSlice"
 import { AlarmForm, DeleteAlarmConfirmation, ItemAlarmCard, ItemAlarmSoundCard } from "../components"
 
@@ -24,9 +23,9 @@ import { Container } from "@mui/material"
 
 export const PageAlarms = () => {
 
-  const dispatch = useDispatch()
-  const authStore = useSelector((store: RootState) => store.auth)
-  const alarmsStore = useSelector((store: RootState) => store.alarms)
+  const dispatch = useAppDispatch()
+  const authStore = useAppSelector((store: RootState) => store.auth)
+  const alarmsStore = useAppSelector((store: RootState) => store.alarms)
 
   const refTimerDiv = useRef<HTMLElement>(null)
 

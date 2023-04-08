@@ -1,6 +1,7 @@
 import { Route, Routes, Navigate } from "react-router-dom";
 
-import { useSelector } from "react-redux"
+
+import { useAppSelector } from "../store/hooks"
 import { RootState } from "../store/index"
 
 import { RouterAuth } from "../auth/router/RouterAuth"
@@ -8,7 +9,7 @@ import { RouterAlarms } from "../alarms/router/AlarmRouter"
 
 
 const AppRouter = () => {
-  const { logged } = useSelector((store: RootState) => store.auth)
+  const { logged } = useAppSelector((store: RootState) => store.auth)
   return (
     <>
       <Routes>
@@ -30,7 +31,7 @@ const AppRouter = () => {
             element={
               <Navigate to="/alarms" />}
           />
-        
+
         </>
 
 
