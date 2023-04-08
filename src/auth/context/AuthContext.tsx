@@ -1,7 +1,6 @@
-import { createContext  } from "react"
-import { userAuthType } from "./reducerAuth"
+import { createContext } from "react"
 
-export interface AuthContextType{
+export interface AuthContextType {
 }
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);

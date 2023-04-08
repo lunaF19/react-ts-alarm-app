@@ -1,4 +1,5 @@
 export const errorsFB = {
+    "auth/invalid-email": "Email or password is invalid  ",
     "auth/email-already-in-use": "El email ingresado ya existe.",
     "auth/user-not-found": "Usuario no encontrado.",
     "auth/wrong-password": "Contraseña incorrecta!.",

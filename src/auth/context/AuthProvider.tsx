@@ -1,4 +1,5 @@
-import { useEffect, useReducer } from "react";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { onAuthStateChanged } from "firebase/auth";
 import { authFB } from "../../api/firebase/config"
@@ -12,13 +13,14 @@ interface AuthProviderProps {
 
 const AuthProvider = (props: AuthProviderProps) => {
     const { children } = props
+    const navigate = useNavigate()
 
+    
     useEffect(() => {
         onAuthStateChanged(authFB, (user) => {
             if (user) { // isValid
             } else {
-                alert("Se debe des loggear")
-                //onLogOut()
+                navigate("/auth/logout")
             }
         });
 

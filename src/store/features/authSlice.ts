@@ -34,7 +34,6 @@ const initialState: stateAuthReducerType = {
 const init = (): stateAuthReducerType => {
     try {
         const itemUserLs = localStorage.getItem(itemLsStateAuth);
-        console.log({ itemUserLs })
         if (!itemUserLs) throw new Error("User not found");
         const itemUserParseLs = JSON.parse(itemUserLs);
         return { logged: true, user: itemUserParseLs };
@@ -76,4 +75,11 @@ export const onLogOut = () => (dispatch: any) => {
     dispatch(logout())
     localStorage.removeItem(itemLsStateAuth);
 };
+
+
+export const onErrorLogin = () => (dispatch: any) => {
+    dispatch(logout())
+    localStorage.removeItem(itemLsStateAuth);
+};
+
 

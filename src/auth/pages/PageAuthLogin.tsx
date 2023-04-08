@@ -1,4 +1,5 @@
-import * as React from 'react';
+import { } from 'react';
+import { useForm, Controller } from 'react-hook-form';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -12,9 +13,16 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Google from '@mui/icons-material/Google';
+import FormHelperText from '@mui/material/FormHelperText';
 import { createTheme } from '@mui/material/styles';
 
 import { useAuth } from "../hooks/useAuth"
+
+
+type FormValues = {
+  email: string;
+  password: string;
+};
 
 function Copyright(props: any) {
   return (
@@ -31,26 +39,35 @@ function Copyright(props: any) {
 
 const theme = createTheme();
 
-export function PageAuthLogin() {
+
+
+export const PageAuthLogin = () => {
 
   const {
-    authGoogleLogin
+    handleSubmit,
+    control,
+    formState
+  } = useForm<FormValues>()
+
+  const {
+    errors
+  } = formState
+
+  const {
+    authGoogleLogin,
+    authLogin
+
   } = useAuth()
 
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+  const onSubmit = (data: FormValues) => {
+    authLogin(data)
   };
 
   return (
 
     <Container component="main" maxWidth="xs">
-  
+
       <Box
         sx={{
           marginTop: 8,
@@ -65,31 +82,65 @@ export function PageAuthLogin() {
         <Typography component="h1" variant="h5">
           Sign in
         </Typography>
-        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            id="email"
-            label="Email Address"
+        <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate sx={{ mt: 1 }}>
+          <Controller
+            rules={{
+              required: "The email is required",
+            }}
+            control={control}
             name="email"
-            autoComplete="email"
-            autoFocus
+
+            render={({
+              field: { onChange, onBlur, value, name, ref },
+              fieldState: { invalid, isTouched, isDirty, error },
+              formState,
+            }) => (
+              <TextField
+                type="email"
+                margin="normal"
+                fullWidth
+                label="Email Address"
+                name={name}
+                autoFocus
+                value={value}
+                onChange={onChange}
+                error={Boolean(error && error.message)}
+                helperText={error && error.message}
+              />
+
+            )}
           />
-          <TextField
-            margin="normal"
-            required
-            fullWidth
+
+          <Controller
             name="password"
-            label="Password"
-            type="password"
-            id="password"
-            autoComplete="current-password"
+            control={control}
+            rules={{
+              required: "The email is required",
+            }}
+            render={({
+              field: { onChange, onBlur, value, name, ref },
+              fieldState: { invalid, isTouched, isDirty, error },
+              formState,
+            }) => (
+              <TextField
+                type="password"
+                margin="normal"
+                fullWidth
+                label="Password"
+                name={name}
+                value={value}
+                onChange={onChange}
+                error={Boolean(error && error.message)}
+                helperText={error && error.message}
+              />
+            )}
           />
-          <FormControlLabel
+
+
+          {/* <FormControlLabel
             control={<Checkbox value="remember" color="primary" />}
             label="Remember me"
-          />
+          /> */}
           <Button
             type="submit"
             fullWidth
@@ -105,7 +156,7 @@ export function PageAuthLogin() {
             sx={{ mt: 3, mb: 2 }}
             onClick={() => authGoogleLogin()}
           >
-            <Google/>
+            <Google />
           </Button>
           <Grid container>
             <Grid item xs>

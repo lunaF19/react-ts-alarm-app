@@ -49,6 +49,7 @@ export const MultiSelectDays = (props: MultiSelectDaysProps) => {
                     daysList2.map(({ value, label }) => {
                         return (
                             <ButtonDay
+                                key={`${value}__${label}`}
                                 isSmall={isSmall}
                                 label={label}
                                 day={value}

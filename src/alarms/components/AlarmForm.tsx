@@ -105,7 +105,7 @@ export const AlarmForm = (props: AlarmFormProps) => {
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
 
-            <Dialog disableEscapeKeyDown open={openModalDialog} onClose={handleClose}>
+            <Dialog disableEscapeKeyDown open={openModalDialog} onClose={handleClose} className='animate__animated animate__fadeIn animate__faster'>
                 <DialogTitle>Create new alarm</DialogTitle>
                 <DialogContent>
                     <Box component="form" sx={{ display: 'flex', flexWrap: 'wrap', alignItems: "center" }}>

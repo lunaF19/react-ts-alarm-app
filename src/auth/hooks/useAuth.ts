@@ -1,7 +1,7 @@
-import { useContext, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { OAuthCredential, UserCredential, PopupRedirectResolver } from "firebase/auth"
-import { onLogin, onLogOut } from "../../store/features/authSlice"
+import { onLogin, onLogOut, onErrorLogin } from "../../store/features/authSlice"
 import notify from "../../UI/utils/notify"
 import {
     createUserWithEmailAndPassword,
@@ -16,22 +16,18 @@ import { useDispatch } from "react-redux/es/hooks/useDispatch";
 import { authFB, errorsFB } from "../../api/firebase/"
 
 interface resAuthType {
-    user?: "",
-    access_token?: "",
-    error?: "",
-    message?: ""
+    error: string | number,
+    message: string
 }
 
 export const useAuth = () => {
-    
+
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const [resAuth, setResAuth] = useState<resAuthType>({ user: "", access_token: "", error: "", message: "" })
+    const [resAuth, setResAuth] = useState<resAuthType>({ error: "", message: "" })
 
     const notifyRef = useRef(null)
-
-
     // // Para hacer register FireBase
     // const authRegister = async (infoRegister:any) => {
     //     const { email, password } = infoRegister
@@ -60,40 +56,41 @@ export const useAuth = () => {
     //     }
     // }
 
-    // // Para hacer login FireBase
-    // const authLogin = async (loginInfo:any) => {
-    //     const { email, password } = loginInfo
-    //     notify.promiseStar(notifyRef, "Wait....")
-    //     try {
-    //         setResAuth(prev => ({ ...prev, error: 0, message: "" }))
+    // Para hacer login FireBase
+    const authLogin = async (loginInfo: { email: string, password: string }) => {
+        notify.promiseStar(notifyRef, "Wait....")
+        try {
+            setResAuth(prev => ({ ...prev, error: 0, message: "" }))
+            const res = await signInWithEmailAndPassword(authFB, loginInfo.email, loginInfo.password)
 
-    //         const res = await signInWithEmailAndPassword(authFB, email, password)
+            if (!res) throw new Error("Credential is null")
 
-    //         const access_token = res.user.accessToken
-    //         const userCredentials = res.user
-    //         const { localId } = userCredentials.reloadUserInfo
+            const { user: { displayName, email, uid, } } = res
+            const user = {
+                displayName,
+                email,
+                uid,
+            }
+            dispatch(onLogin(user))
+            notify.promiseEnd.success(notifyRef, `Welcome ${displayName || user.email?.split("@")[0]}`)
+            navigate("/alarms");
 
-    //         onLogin(user)
+        } catch (err) {
+            console.error("Login", err)
+            dispatch(onErrorLogin())
+            //message
+            const { code } = err as any
+            const message = errorsFB[code] || "uncontrolled error"
+            setResAuth({ error: code, message: message })
 
-    //         setResAuth(prev => ({ ...prev, access_token, user, role_id: "AD" }))
-    //         notify.promiseEnd.success(notifyRef, `Welcome ${email.split("@")[0]}`)
-    //         //notify.success("Welcome " + email.split("@")[0])
-
-    //     } catch (err) {
-    //         console.error(err)
-    //         localStorage.clear()
-    //         //message
-    //         const { code } = err
-    //         setResAuth(prev => ({ ...prev, error: code, message: errorsFB[code] }))
-    //         notify.promiseEnd.error(notifyRef, `Error! ${errorsFB[code]}`)
-    //         //notify.error("Error! " + errorsFB[code])
-    //     }
-    // }
+            notify.promiseEnd.error(notifyRef, message)
+        }
+    }
 
     // Para hacer login FireBase Google
     const authGoogleLogin = async () => {
         try {
-            setResAuth(prev => ({ ...prev, error: 0, message: "" }))
+            setResAuth({ error: 0, message: "" })
             notify.promiseStar(notifyRef, "Login with google...")
             const provider = new GoogleAuthProvider();
 
@@ -111,19 +108,18 @@ export const useAuth = () => {
                 uid,
             }
             dispatch(onLogin(user))
-
+            notify.promiseEnd.success(notifyRef, `Welcome ${displayName || user.email?.split("@")[0]}`)
             navigate("/alarms");
-            // setResAuth(prev => ({ ...prev, access_token, user, role_id: "AD" }))
-
-            notify.promiseEnd.success(notifyRef, `Welcome ${displayName}`)
 
         } catch (err: any) {
+            dispatch(onErrorLogin())
             console.error(err)
-            localStorage.clear()
             //message
-            const { code } = err
-            setResAuth(prev => ({ ...prev, error: code, message: errorsFB[code] }))
-            notify.promiseEnd.error(notifyRef, `Error! ${errorsFB[code]}`)
+            const { code } = err as any
+            const message = errorsFB[code] || "uncontrolled error"
+            setResAuth({ error: code, message: message })
+
+            notify.promiseEnd.error(notifyRef, message)
         }
     }
 
@@ -136,6 +132,7 @@ export const useAuth = () => {
     return {
         ...resAuth,
         authGoogleLogin,
-        authLogOut,
+        authLogin,
+        authLogOut
     }
 }
