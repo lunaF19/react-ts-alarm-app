@@ -10,8 +10,6 @@ import {
     GoogleAuthProvider
 } from "firebase/auth";
 
-import { URL_API } from "../../config";
-
 import { useAppDispatch } from "../../store/hooks"
 
 import { authFB, errorsFB } from "../../api/firebase/"
